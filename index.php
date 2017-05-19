@@ -1,5 +1,7 @@
 <?php
 
+require 'UploadException.php';
+
 define('OUR_ARTICLE', 'Latest_plane_crash');
 $FIB_MEMO = array();
 
@@ -42,6 +44,53 @@ function handle_get_request($request_uri) {
   else {
     header('X-Wikimedia: Truly, a mini site with one article', false, 404);
     echo 'Sorry, we still have not found what you are looking for.';
+  }
+}
+
+function handle_post_request($request_uri) {
+  if ($request_uri == '/edit/' . OUR_ARTICLE) {
+    process_form();
+  }
+  else {
+  }
+}
+
+function process_form() {
+  $post_params = array();
+  foreach ($_POST as $key=>$value) {
+    $post_params[$key] = $value;
+  }
+  process_file_upload($post_params);
+  print(var_export($post_params, true));
+}
+
+function process_file_upload($post_params) {
+  // handle any files
+  $upload_error = false;
+  if ($_FILES) {
+    foreach ($_FILES as $key=>$file) {
+      if (isset($file['error']) && $file['error'] === UPLOAD_ERR_NO_FILE) {
+        $post_params[$key] = false;
+        continue; // silently skip it
+      }
+      if ($file['error'] !== UPLOAD_ERR_OK) {
+        $err = new UploadException($file['error']);
+        error_log("$key: $err");
+        $upload_error = $key;
+        break;
+      }
+      $filename = $file['name'];
+      $path_parts = pathinfo($filename);
+      $file_ext = isset($path_parts['extension']) ? $path_parts['extension'] : "";
+      $post_params[$key] = array(
+        'tmp_name'  => $file['tmp_name'],
+        'orig_name' => $filename,
+        'file_ext'  => $file_ext,
+      );
+    }
+  }
+  if ($upload_error) {
+    throw $upload_error;
   }
 }
 
