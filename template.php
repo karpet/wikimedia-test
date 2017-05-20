@@ -25,7 +25,7 @@ if ($is_api) {
 <p class="wiki">
 
  <form action="/edit/<?php echo OUR_ARTICLE ?>" method="post">
-  <textarea id="article" rows="10" cols="80"><?php echo $article_wiki ?></textarea>
+  <textarea id="article" rows="5" cols="80"><?php echo $article_wiki ?></textarea>
   <div class="buttons">
    <button class="btn btn-primary">Save</button>
    <button id="add-photo-btn" onclick='return false' class="btn btn-default">Add Photo</button>
@@ -33,17 +33,71 @@ if ($is_api) {
  </form>
 </p>
 
-<form id="add-photo" action="<?php echo $_SERVER['REQUEST_URI'] ?>" class="dropzone" style="display:none"></form>
+ <div id="photo-dropzone" style="display:none">
+  Drag photos here
+  <form id="add-photo" action="<?php echo $_SERVER['REQUEST_URI'] ?>" class=""></form>
+  <div id="photo-dialog" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">About this photo</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="caption">Caption</label>
+          <input type="text" class="form-control" id="caption" placeholder="Caption">
+        </div>
+        <div class="form-group">
+          <label for="copyright">Copyright</label>
+          <input type="text" class="form-control" id="copyright" placeholder="Copyright">
+        </div>
+        <div class="form-group">
+          <label for="credit">Credit</label>
+          <input type="text" class="form-control" id="credit" placeholder="Credit">
+        </div>
+        <div class="form-group">
+          <label for="alt">Alt text</label>
+          <input type="text" class="form-control" id="alt" placeholder="Alternative text">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button id="save-photo" type="button" class="btn btn-primary">Save</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+ </div><!-- /.modal -->
+ </div>
 
 </div>
 
- <script src="dropzone.js"></script>
  <script src="jquery-3.2.1.min.js"></script>
+ <script src="dropzone-amd-module.js"></script>
  <script src="bootstrap.min.js"></script>
  <script>
   $(document).ready(function() {
-     $photo_form = $('#add-photo');
-     $('#add-photo-btn').click(function() { $photo_form.toggle() });
+     var $photo_form = $('#add-photo');
+     $photo_form.addClass('dropzone');
+     var $photo_zone = $('#photo-dropzone');
+     var accepted_ext = $.map(['png', 'jpg', 'jpeg', 'gif'], function(ext) {
+       return ['.'+ext, '.'+ext.toUpperCase()];
+     });
+     var $dropzone = $photo_form.dropzone({
+       acceptedFiles: accepted_ext.join(','),
+       accept: function(file, done) {
+         console.log('accept', file);
+         $('#photo-dialog').modal();
+         done();
+       },
+       autoProcessQueue: false,
+       init: function() {
+         this.on('addedfile', function(file) {
+           console.log('file added', file);
+         });
+       },
+     });
+     $('#add-photo-btn').click(function() { $photo_zone.toggle() });
   });
  </script>
 
