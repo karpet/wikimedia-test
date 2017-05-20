@@ -25,7 +25,7 @@ if ($is_api) {
 <p class="wiki">
 
  <form action="<?php echo $_SERVER['REQUEST_URI'] ?>" method="post">
-  <textarea id="article" rows="5" cols="80"><?php echo $article_wiki ?></textarea>
+  <textarea name="article" id="article" rows="5" cols="80"><?php echo $article_wiki ?></textarea>
   <div class="buttons">
    <button class="btn btn-primary">Save</button>
    <button id="add-photo-btn" onclick='return false' class="btn btn-default">Add Photo</button>
