@@ -24,7 +24,7 @@ if ($is_api) {
 <h1>Edit <?php echo $article['title'] ?></h1>
 <p class="wiki">
 
- <form action="/edit/<?php echo OUR_ARTICLE ?>" method="post">
+ <form action="<?php echo $_SERVER['REQUEST_URI'] ?>" method="post">
   <textarea id="article" rows="5" cols="80"><?php echo $article_wiki ?></textarea>
   <div class="buttons">
    <button class="btn btn-primary">Save</button>
