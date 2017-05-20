@@ -11,7 +11,10 @@ if (!file_exists(UPLOAD_DIR)) {
 }
 
 define('OUR_ARTICLE', 'Latest_plane_crash');
-define('ARTICLE_PATH', 'article.html');
+define('ARTICLE_PATH', UPLOAD_DIR . '/article.html');
+if (!file_exists(ARTICLE_PATH)) {
+    file_put_contents(ARTICLE_PATH, 'A terrible thing has happened');
+}
 $ALLOWED_FILES = array('jpg', 'jpeg', 'gif', 'png');
 $FIB_MEMO = array();
 
@@ -111,6 +114,7 @@ function process_form() {
  *
  *
  * @param unknown $post_params
+ * @return unknown
  */
 function process_file_upload(&$post_params) {
     // handle any files
